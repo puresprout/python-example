@@ -1,4 +1,3 @@
-import pygame
 import random
 from pygame.sprite import *
 from pygame.locals import *
@@ -14,8 +13,8 @@ class MovingBall(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, self.color, (15, 15), 15, 0)
 
         self.rect = self.image.get_rect()
-        self.rect.centerx = random.randrange(0, 600)
-        self.rect.centery = random.randrange(0, 600)
+        self.rect.centerx = random.randrange(30, screen.get_width() - 30)
+        self.rect.centery = random.randrange(30, screen.get_height() - 30)
         self.directionx = random.randrange(-10, 10)
         self.directiony = random.randrange(-10, 10)
 
@@ -37,18 +36,9 @@ screen = pygame.display.set_mode((600, 600))
 
 clock = pygame.time.Clock()
 
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-
-ball1 = MovingBall(RED)
-ball2 = MovingBall(GREEN)
-ball3 = MovingBall(BLUE)
-
 ball_list = pygame.sprite.Group()
-ball_list.add(ball1)
-ball_list.add(ball2)
-ball_list.add(ball3)
+for i in range(1, 50):
+    ball_list.add(MovingBall((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
 
 isEnd = False
 while not isEnd:
@@ -56,23 +46,12 @@ while not isEnd:
         if event.type == QUIT:
             isEnd = True
 
-    if collide_rect(ball1, ball2):
-        ball1.directionx *= -1
-        ball1.directiony *= -1
-        ball2.directionx *= -1
-        ball2.directiony *= -1
-
-    if collide_rect(ball1, ball3):
-        ball1.directionx *= -1
-        ball1.directiony *= -1
-        ball3.directionx *= -1
-        ball3.directiony *= -1
-
-    if collide_rect(ball3, ball2):
-        ball3.directionx *= -1
-        ball3.directiony *= -1
-        ball2.directionx *= -1
-        ball2.directiony *= -1
+    balls = ball_list.sprites()
+    for i, ball in enumerate(balls):
+        for ball2 in balls[i + 1:]:
+            if collide_rect(ball, ball2):
+                ball.kill()
+                ball2.kill()
 
     ball_list.update()
 
